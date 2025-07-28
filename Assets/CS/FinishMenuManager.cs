@@ -154,12 +154,14 @@ public class FinishMenuManager : MonoBehaviour
         RetryButton.gameObject.SetActive(false);
         QuitButton.gameObject.SetActive(false);
 
-        // SceneControllerを使ってタイトルに遷移する
+        // SceneControllerを取得
         SceneController sceneController = FindObjectOfType<SceneController>();
 
+        // nullじゃなかったら
         if (sceneController != null)
         {
-            sceneController.scenChange(2); // シーンインデックス2 リザルト
+            // リザルトに遷移
+            sceneController.scenChange(3);
         }
     }
 }

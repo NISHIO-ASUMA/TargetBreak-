@@ -31,7 +31,7 @@ public class TargetBlockManager : MonoBehaviour
         int count = blocks.Length;
 
         // テキスト表示
-        Target.text = "Target : " + count.ToString();
+        Target.text = " " + count.ToString();
 
     }
 }

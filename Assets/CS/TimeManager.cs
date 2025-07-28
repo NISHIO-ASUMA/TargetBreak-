@@ -37,11 +37,15 @@ public class TimeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // カウントしてないとき
         if (!isRunning) return;
 
+        // カウントダウン開始
         if (countDown)
         {
+            // 時間を減算
             currentTime -= Time.deltaTime;
+
             if (currentTime <= 0f)
             {
                 currentTime = 0f;
@@ -57,9 +61,11 @@ public class TimeManager : MonoBehaviour
         }
         else
         {
+            // 時間を加算
             currentTime += Time.deltaTime;
         }
 
+        // 文字更新
         UpdateTimerText();
     }
 
@@ -69,7 +75,7 @@ public class TimeManager : MonoBehaviour
         int minutes = Mathf.FloorToInt(currentTime / 60f);
         int seconds = Mathf.FloorToInt(currentTime % 60f);
 
-        timerText.text = $"Time {minutes:00}:{seconds:00}";
+        timerText.text = $"{minutes:00}:{seconds:00}";
     }
 
     // タイマー停止

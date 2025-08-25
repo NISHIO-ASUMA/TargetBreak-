@@ -81,6 +81,9 @@ public class AllBlockManager : MonoBehaviour
             {
                 Debug.Log("ステージクリア！");
 
+                // StageCheckManagerのカウントを増やす
+                StageCheckManager.StageCount++;
+
                 // 最後のステージかどうかチェック
                 if (currentStageIndex +1  >= stages.Count)
                 {
@@ -129,6 +132,9 @@ public class AllBlockManager : MonoBehaviour
     /// </summary>
     public void RetryStage()
     {
+        // StageCheckManagerのカウントを初期化
+        StageCheckManager.StageCount = 0;
+
         // インデックス番号を初期化
         currentStageIndex = 0;
 

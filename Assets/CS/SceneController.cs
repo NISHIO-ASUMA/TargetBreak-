@@ -34,27 +34,27 @@ public class SceneController : MonoBehaviour
 		// 現在のシーン名を取得
 		string currentSceneName = SceneManager.GetActiveScene().name;
 
-		// 決定キー かつ ゲームシーンではない
-		if (Input.GetKey(KeyCode.Return) && currentSceneName != "GameScene")
-		{
-			// 現在のシーン番号に1を足した数字を保持する
-			int nScnenIdx = SceneManager.GetActiveScene().buildIndex + 1; // 現在のアクティブなシーンを取得,加算
+        // 決定キー かつ ゲームシーン または　Tutorialじゃないとき
+        if (Input.GetKey(KeyCode.Return) && currentSceneName != "GameScene")
+        {
+            // 現在のシーン番号に1を足した数字を保持する
+            int nScnenIdx = SceneManager.GetActiveScene().buildIndex + 1; // 現在のアクティブなシーンを取得,加算
 
-			// 最大シーン番号と比較,超えそうになったら最初のシーンに戻す
-			if (nScnenIdx >= SceneManager.sceneCountInBuildSettings)
-			{
-				nScnenIdx = 0;
-			}
+            // 最大シーン番号と比較,超えそうになったら最初のシーンに戻す
+            if (nScnenIdx >= SceneManager.sceneCountInBuildSettings)
+            {
+                nScnenIdx = 0;
+            }
 
-			// シーン切り替え
-			scenChange(nScnenIdx);
-		}
+            // シーン切り替え
+            scenChange(nScnenIdx);
+        }
 
-		// Escキーでゲーム終了
-		if (Input.GetKey(KeyCode.Escape))
+        // Escキーでゲーム終了
+        if (Input.GetKey(KeyCode.Escape))
 		{
 #if UNITY_EDITOR
-			// ゲームプレイ終了
+			// ゲームエディター終了
 			UnityEditor.EditorApplication.isPlaying = false;
 #else
 			// ゲームプレイ終了

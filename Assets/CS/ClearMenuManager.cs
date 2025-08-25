@@ -25,6 +25,11 @@ public class ClearMenuManager : MonoBehaviour
     private int currentIndex = 0;
     private float inputCooldown = 0.2f;
     private float inputTimer = 0f;
+    private float blockInputTimer = 0f;   // 決定キー入力をブロックするタイマー
+
+    // 色指定
+    private Color normalColor = Color.white;
+    private Color selectedColor = Color.grey;
 
     void Start()
     {
@@ -55,6 +60,11 @@ public class ClearMenuManager : MonoBehaviour
         Time.timeScale = 0f; // ポーズ
 
         currentIndex = 0;
+
+        // 選択カラー更新
+        UpdateButtonHighlight();
+
+        blockInputTimer = 1.5f; // メニュー表示後0.2秒間は入力無効
     }
 
     // 次のステージに進む
@@ -81,14 +91,17 @@ public class ClearMenuManager : MonoBehaviour
         nextButton.gameObject.SetActive(false); // ボタン非表示
         quitButton.gameObject.SetActive(false); // ボタン非表示
 
+        // StageCheckManagerのカウントを初期化 ( クリア数を消す )
+        StageCheckManager.StageCount = 0;
+
         // SceneControllerを取得
         SceneController sceneController = FindObjectOfType<SceneController>();
 
         // nullじゃなかったら
         if (sceneController != null)
         {
-            // リザルトシーン遷移
-            sceneController.scenChange(3);
+            // タイトルシーン遷移
+            sceneController.scenChange(0);
         }
     }
 
@@ -97,6 +110,13 @@ public class ClearMenuManager : MonoBehaviour
     {
         // 例外
         if (!clearMenuPanel.activeSelf) return;
+
+        // 無効化タイマー進める
+        if (blockInputTimer > 0f)
+        {
+            blockInputTimer -= Time.unscaledDeltaTime;
+            return; // この間は入力処理をスキップ
+        }
 
         // 加算
         inputTimer += Time.unscaledDeltaTime;
@@ -111,8 +131,8 @@ public class ClearMenuManager : MonoBehaviour
             else if (vertical > 0)
                 currentIndex = (currentIndex - 1 + menuButtons.Length) % menuButtons.Length;
 
-            // 選択更新
-            EventSystem.current.SetSelectedGameObject(menuButtons[currentIndex].gameObject);
+            // 選択カラー更新
+            UpdateButtonHighlight();
 
             // 初期値設定
             inputTimer = 0f;
@@ -122,6 +142,27 @@ public class ClearMenuManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("Submit"))
         {
             menuButtons[currentIndex].onClick.Invoke();
+        }
+    }
+
+    // ハイライト更新処理
+    private void UpdateButtonHighlight()
+    {
+        for (int i = 0; i < menuButtons.Length; i++)
+        {
+            var colors = menuButtons[i].colors;
+            if (i == currentIndex)
+            {
+                colors.normalColor = selectedColor;
+                colors.highlightedColor = selectedColor;
+            }
+            else
+            {
+                colors.normalColor = normalColor;
+                colors.highlightedColor = normalColor;
+            }
+
+            menuButtons[i].colors = colors;
         }
     }
 }

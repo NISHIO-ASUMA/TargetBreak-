@@ -23,12 +23,15 @@ public class FinishMenuManager : MonoBehaviour
 
     private Button[] menuButtons;       // ボタンの配列
     private int currentIndex = 0;       // 選択メニュー番号
-    private float inputCooldown = 0.2f; // 入力受付までの時間
+    private float inputCooldown = 0.3f; // 入力受付までの時間
     private float inputTimer = 0f;      // キー入力時間
     private bool isKeyDown = false;     // キーの押下状態
     private Vector3 playerStartPosition; // プレイヤーの初期位置
+    private int SceneNextIdx = 3;       // リザルト番号のインデックス
 
-    private SceneController SManager;
+    // 色管理を追加
+    private Color normalColor = Color.white;
+    private Color selectedColor = Color.grey;
 
     void Start()
     {
@@ -40,7 +43,6 @@ public class FinishMenuManager : MonoBehaviour
         // スクリプト取得
         timeManager = FindObjectOfType<TimeManager>();
         blockManager = FindObjectOfType<AllBlockManager>();
-        SManager = FindObjectOfType<SceneController>();
 
         // ボタンイベント登録
         RetryButton.onClick.AddListener(OnRetry);
@@ -58,11 +60,18 @@ public class FinishMenuManager : MonoBehaviour
         // 未使用じゃなかったら
         if (!FinishMenuPanel.activeSelf) return;
 
+        // 無効化タイマー進める
+        if (inputCooldown > 0f)
+        {
+            inputCooldown -= Time.unscaledDeltaTime;
+            return; // この間は入力処理をスキップ
+        }
+
         // 入力時間を加算
         inputTimer += Time.unscaledDeltaTime;
 
-        // Enterキーが離されたかどうかで検出
-        if (!isKeyDown && !Input.GetKey(KeyCode.Return))
+        // Enterキー or 攻撃ボタンが離されたかどうかで検出
+        if (!isKeyDown && !Input.GetKey(KeyCode.Return) || !Input.GetButtonDown("Fire2"))
         {
             // 入力可能状態になる
             isKeyDown = true;
@@ -80,15 +89,12 @@ public class FinishMenuManager : MonoBehaviour
             else
                 currentIndex = (currentIndex - 1 + menuButtons.Length) % menuButtons.Length;
 
-            // 初期は一番上に設定
-            EventSystem.current.SetSelectedGameObject(menuButtons[currentIndex].gameObject);
-
-            // 入力受付を初期化
+            UpdateHighlight();  // カラー変更関数
             inputTimer = 0f;
         }
 
         // 一度だけ入力を受け付ける
-        if (Input.GetKeyDown(KeyCode.Return) && isKeyDown)
+        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetButtonDown("Submit"))&& isKeyDown)
         {
             // メニューの処理を実行
             menuButtons[currentIndex].onClick.Invoke();
@@ -114,6 +120,7 @@ public class FinishMenuManager : MonoBehaviour
         // インデックス,入力受付時間の初期化
         currentIndex = 0;
         inputTimer = 0f;
+        UpdateHighlight();    // カラー変更関数
     }
 
     //==============================
@@ -161,7 +168,36 @@ public class FinishMenuManager : MonoBehaviour
         if (sceneController != null)
         {
             // リザルトに遷移
-            sceneController.scenChange(3);
+            sceneController.scenChange(SceneNextIdx);
+        }
+    }
+
+    //==============================
+    // ボタン色変更関数
+    //==============================
+    private void UpdateHighlight()
+    {
+        // ボタン配列取得
+        for (int i = 0; i < menuButtons.Length; i++)
+        {
+            // カラーを取得
+            var colors = menuButtons[i].colors;
+
+            // indexと一致
+            if (i == currentIndex)
+            {
+                colors.normalColor = selectedColor;
+                colors.highlightedColor = selectedColor;
+            }
+            else
+            {
+                // それ以外
+                colors.normalColor = normalColor;
+                colors.highlightedColor = normalColor;
+            }
+
+            // 変更後のカラーをセット
+            menuButtons[i].colors = colors;
         }
     }
 }

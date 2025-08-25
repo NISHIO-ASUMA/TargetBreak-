@@ -13,7 +13,7 @@ public class TimeManager : MonoBehaviour
     // 使用メンバ変数
     //***********************:
     public TextMeshProUGUI timerText;     // TextMeshPro 表示用
-    private float gameTime = 20f;          // タイマー初期時間（カウントダウンの場合）
+    private float gameTime = 60f;          // タイマー初期時間
     public bool countDown = true;         // カウントダウンかカウントアップか
 
     private float currentTime;            // 現在のタイマー値
